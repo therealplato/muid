@@ -7,7 +7,8 @@ import (
 )
 
 func main() {
+	machineID := []byte("foo")
 	// Generate one ID:
-	i := muid.Generate()
+	i := muid.Generate(machineID)
 	fmt.Println(i.String())
 }
