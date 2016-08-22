@@ -1,6 +1,10 @@
 package muid
 
-import "fmt"
+import (
+	"encoding/binary"
+	"fmt"
+	"time"
+)
 
 const length = 16           // bytes
 const left = 8              // bytes for timestamp
@@ -13,16 +17,12 @@ type MUID []byte
 
 // Generate creates a MUID
 func Generate(machineID []byte) MUID {
+	id := make([]byte, length)
 	machineID = padOrTrim(machineID, right)
-	// t := time.Now().UnixNano()
-	// fmt.Printf("%016x\n", t)
-	return MUID{
-		0x00, 0x00, 0x00, 0x00,
-		0x00, 0x00,
-		0x40, 0x00,
-		0x80, 0x00,
-		0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-	}
+	copy(id[left:], machineID)
+	t := time.Now().UnixNano()
+	binary.BigEndian.PutUint64(id[:left], uint64(t)) // thx http://stackoverflow.com/a/11015354/1380669
+	return MUID(id)
 }
 
 // String returns a hex formatted id string
