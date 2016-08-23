@@ -41,10 +41,21 @@ func TestGenerate(t *testing.T) {
 				assert.Equal(t, expected, id[sizeLeft:])
 			})
 			t.Run("is truncated, keeping right bytes, when long", func(t *testing.T) {
+				machineid := []byte{1, 2, 3, 4, 5, 6, 7, 8, 9}
+				require.True(t, len(machineid) > sizeRight)
+				id, err := Generate(machineid)
+				assert.Nil(t, err)
+				expected := MUID([]byte{
+					2, 3, 4, 5, 6, 7, 8, 9,
+				})
+				assert.Equal(t, expected, id[sizeLeft:])
 			})
 		})
 	})
 	t.Run("it returns an error when called with a blank machine id", func(t *testing.T) {
+		id, err := Generate([]byte{})
+		assert.Nil(t, id)
+		assert.NotNil(t, err)
 	})
 }
 

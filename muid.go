@@ -16,8 +16,8 @@ type MUID []byte
 
 // Generate creates a MUID
 func Generate(machineID []byte) (MUID, error) {
-	if machineID == nil {
-		return nil, fmt.Errorf("missing %d required machineID bytes", sizeRight)
+	if len(machineID) == 0 {
+		return nil, fmt.Errorf("missing %d machineID bytes", sizeRight)
 	}
 	// TODO: Try starting with padOrTrim(machineID, sizeBytes)
 	id := make([]byte, sizeBytes)
