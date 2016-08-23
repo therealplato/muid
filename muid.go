@@ -6,16 +6,13 @@ import (
 	"time"
 )
 
-const sizeBytes = 16                   // bytes
-const sizeLeft = 8                     // bytes for timestamp
-const sizeRight = sizeBytes - sizeLeft // bytes for machine id
-
 // MUID is similar to a UUIDv1
 // The MSB bits represent a timestamp, the LSB bits are a generator machine ID
 type MUID []byte
 
 // Generate creates a MUID
-func Generate(machineID []byte) (MUID, error) {
+func Generate(sizeBytes, sizeLeft int, machineID []byte) (MUID, error) {
+	sizeRight := sizeBytes - sizeLeft // bytes for machine id
 	if len(machineID) == 0 {
 		return nil, fmt.Errorf("missing %d machineID bytes", sizeRight)
 	}

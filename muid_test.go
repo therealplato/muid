@@ -14,16 +14,15 @@ func TestGenerate(t *testing.T) {
 		machineid := []byte{0x66, 0x6f, 0x6f}
 
 		t.Run("id is the correct length", func(t *testing.T) {
-			id, err := Generate(machineid)
+			id, err := Generate(16, 8, machineid)
 			assert.Nil(t, err)
-			assert.Equal(t, len(id), sizeBytes)
+			assert.Equal(t, len(id), 16)
 		})
 
 		t.Run("timestamp portion of id is recent", func(t *testing.T) {
-			require.True(t, sizeLeft >= 8) // otherwise the nanosecond timestamp gets left truncated
-			id, err := Generate(machineid)
+			id, err := Generate(16, 8, machineid)
 			require.Nil(t, err)
-			tsb := id[:sizeLeft]
+			tsb := id[:8]
 			tsi := binary.BigEndian.Uint64(tsb)
 			ts := time.Unix(0, int64(tsi))
 			assert.WithinDuration(t, time.Now(), ts, time.Millisecond)
@@ -31,19 +30,14 @@ func TestGenerate(t *testing.T) {
 
 		t.Run("machineid portion of id", func(t *testing.T) {
 			t.Run("is left zero padded when short", func(t *testing.T) {
-				require.True(t, len(machineid) < sizeRight)
-				id, err := Generate(machineid)
+				id, err := Generate(16, 8, machineid)
 				assert.Nil(t, err)
-				zeroes := sizeRight - len(machineid)
-				zeroed := make([]byte, zeroes)
-				zeroed = append(zeroed, 0x66, 0x6f, 0x6f)
-				expected := MUID(zeroed)
-				assert.Equal(t, expected, id[sizeLeft:])
+				expected := MUID{0, 0, 0, 0, 0, 0x66, 0x6f, 0x6f}
+				assert.Equal(t, expected, id[8:])
 			})
 			t.Run("is truncated, keeping right bytes, when long", func(t *testing.T) {
 				machineid := []byte{1, 2, 3, 4, 5, 6, 7, 8, 9}
-				require.True(t, len(machineid) > sizeRight)
-				id, err := Generate(machineid)
+				id, err := Generate(16, 8, machineid)
 				assert.Nil(t, err)
 				expected := MUID([]byte{
 					2, 3, 4, 5, 6, 7, 8, 9,
@@ -53,7 +47,7 @@ func TestGenerate(t *testing.T) {
 		})
 	})
 	t.Run("it returns an error when called with a blank machine id", func(t *testing.T) {
-		id, err := Generate([]byte{})
+		id, err := Generate(16, 8, []byte{})
 		assert.Nil(t, id)
 		assert.NotNil(t, err)
 	})
