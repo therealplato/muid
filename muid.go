@@ -7,10 +7,14 @@ import (
 )
 
 // MUID is similar to a UUIDv1
-// The MSB bits represent a timestamp, the LSB bits are a generator machine ID
+// The MSB bits represent a timestamp, the LSB bits are a generator machineID
 type MUID []byte
 
-// Generate creates a MUID
+// Generate takes the total id length sizeBytes, the number of bytes in the
+// timestamp portion sizeLeft, and a machineID. If machineID is empty, an error
+// is returned. Otherwise, machineID is left zero padded to (sizeBytes-sizeLeft)
+// and then truncated to (sizeBytes-sizeLeft) bytes. A MUID is constructed by
+// concatenating the timestamp bytes and machineID bytes and returned.
 func Generate(sizeBytes, sizeLeft int, machineID []byte) (MUID, error) {
 	sizeRight := sizeBytes - sizeLeft // bytes for machine id
 	if len(machineID) == 0 {
