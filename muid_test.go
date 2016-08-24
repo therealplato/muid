@@ -42,7 +42,7 @@ func TestGenerate(t *testing.T) {
 				expected := MUID([]byte{
 					2, 3, 4, 5, 6, 7, 8, 9,
 				})
-				assert.Equal(t, expected, id[sizeLeft:])
+				assert.Equal(t, expected, id[8:])
 			})
 		})
 	})
