@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestGenerator(t *testing.T) {
+func TestNewGenerator(t *testing.T) {
 	machineid := []byte{0x66, 0x6f, 0x6f}
 	var g *Generator
 	var err error
@@ -30,6 +30,11 @@ func TestGenerator(t *testing.T) {
 			assert.Nil(t, g)
 		})
 	})
+}
+func TestGenerate(t *testing.T) {
+	machineid := []byte{0x66, 0x6f, 0x6f}
+	var g *Generator
+	var err error
 	t.Run("successful id generation", func(t *testing.T) {
 		g, err = NewGenerator(3, 3, machineid)
 		id := g.Generate()
@@ -58,5 +63,39 @@ func TestGenerator(t *testing.T) {
 		assert.NotEqual(t, id1, id2)
 		assert.NotEqual(t, id2, id3)
 		assert.NotEqual(t, id3, id1)
+	})
+}
+
+func TestBulk(t *testing.T) {
+	machineid := []byte{0x66, 0x6f, 0x6f}
+	t.Run("successful bulk id generation", func(t *testing.T) {
+		g, err := NewGenerator(3, 3, machineid)
+		require.Nil(t, err)
+		mm := g.Bulk(3)
+		t.Run("correct number of MUIDs returned", func(t *testing.T) {
+			assert.Equal(t, 3, len(mm))
+
+		})
+		t.Run("muids contain machineid bytes", func(t *testing.T) {
+			assert.Equal(t, MUID(machineid), mm[0][3:6])
+			assert.Equal(t, MUID(machineid), mm[1][3:6])
+			assert.Equal(t, MUID(machineid), mm[2][3:6])
+		})
+		t.Run("muids are not identical", func(t *testing.T) {
+			assert.NotEqual(t, mm[0], mm[1])
+			assert.NotEqual(t, mm[1], mm[2])
+			assert.NotEqual(t, mm[2], mm[0])
+		})
+		t.Run("muids contain sequential timestamps", func(t *testing.T) {
+			g, err := NewGenerator(8, 3, machineid)
+			require.Nil(t, err)
+
+			mm := g.Bulk(3)
+			t0 := binary.BigEndian.Uint64(mm[0][0:8])
+			t1 := binary.BigEndian.Uint64(mm[1][0:8])
+			t2 := binary.BigEndian.Uint64(mm[2][0:8])
+			assert.Equal(t, t0+1, t1)
+			assert.Equal(t, t1+1, t2)
+		})
 	})
 }
