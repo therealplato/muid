@@ -1,0 +1,10 @@
+Hire Isaac
+???
+Profit!
+
+
+But seriously, the next steps here are:
+- write GRPC service wrapping generator.Generate() and generator.Bulk()
+- try running a Kubernetes deployment with many generators simultaneously
+- store machineids in etcd and look them up before using (to avoid collisions)
+- find out why muid uses equal memory for 16 byte and 6 byte ID's

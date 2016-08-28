@@ -1,10 +1,46 @@
-My Unique ID
+#My Unique ID
 
-This tool generates ids similar to uuidv1 (based on timestamp and generator MAC address)
+This tool generates unique ids similar to uuidv1 (based on timestamp and generator machine id). Uniqueness depends on two factors: The system running `muid` must have a correct system clock; More than one muid binary may not be running simultaneously with the same machineid.
+
+Machine ID's may be randomly chosen when the muid generator container is created, or a MAC address may be used.
 
 ###Usage
-####Deploy one broker and one producer:
-`kubectl ...`
+Put the code in your `$GOPATH`:
 
-####Consume over GRPC:
-`go run test/consumer/main.go`
+```
+go get github.com/therealplato/muid
+ (or...)
+cp -r . $GOPATH/src/github.com/therealplato/muid
+
+cd $GOPATH/src/github.com/therealplato/muid
+```
+
+Build the binary:
+
+```
+go build cmd/muid.go
+```
+
+Run the binary with default configuration:
+./muid
+(or, ./muix.exe on windows)
+
+### Configuration
+The `muid` binary supports these flags:
+
+
+```
+$ ./muid.exe -h
+Usage of C:\Users\there\go\src\github.com\therealplato\muid\muid.exe:
+  -mid string
+        hexadecimal machine id (default "1234567890abcdef")
+  -n int
+        generate this many ID's (default 1000)
+  -profile
+        enable cpu and memory profiling
+  -q    mute stdout
+  -sizemid int
+        use this many bytes for machine ID (default 8)
+  -sizets int
+        use this many bytes for LSBs of nanosecond timestamp (default 8)
+ ```
