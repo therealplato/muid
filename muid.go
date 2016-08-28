@@ -26,6 +26,7 @@ func Generate(sizeBytes, sizeLeft int, machineID []byte) (MUID, error) {
 	copy(id[sizeLeft:], machineID)
 	t := time.Now().UnixNano()
 	binary.BigEndian.PutUint64(id[:sizeLeft], uint64(t)) // thx http://stackoverflow.com/a/11015354/1380669
+	time.Sleep(1 * time.Nanosecond)
 	return MUID(id), nil
 }
 
