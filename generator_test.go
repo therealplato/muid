@@ -1,9 +1,12 @@
 package muid
 
 import (
+	"encoding/binary"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestGenerator(t *testing.T) {
@@ -32,14 +35,15 @@ func TestGenerator(t *testing.T) {
 		})
 	})
 
-	// 		t.Run("timestamp portion of id is recent", func(t *testing.T) {
-	// 			id, err := generate(16, 8, machineid)
-	// 			require.Nil(t, err)
-	// 			tsb := id[:8]
-	// 			tsi := binary.BigEndian.Uint64(tsb)
-	// 			ts := time.Unix(0, int64(tsi))
-	// 			assert.WithinDuration(t, time.Now(), ts, time.Millisecond)
-	// 		})
+	t.Run("timestamp portion of id is recent", func(t *testing.T) {
+		g, err = NewGenerator(8, 3, machineid)
+		require.Nil(t, err)
+		id := g.Generate()
+		tsb := id[:8]
+		tsi := binary.BigEndian.Uint64(tsb)
+		ts := time.Unix(0, int64(tsi))
+		assert.WithinDuration(t, time.Now(), ts, time.Millisecond)
+	})
 
 	// 		t.Run("machineid portion of id", func(t *testing.T) {
 	// 			t.Run("is left zero padded when short", func(t *testing.T) {
