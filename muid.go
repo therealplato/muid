@@ -16,7 +16,7 @@ func generate(sizeTS, sizeMID int, ts, mid []byte) MUID {
 	size := sizeTS + sizeMID
 	// left pad mid with zeroes up to total size:
 	id := padOrTrim(mid, size)
-	copy(ts, id[:sizeTS])
+	copy(id[:sizeTS], ts)
 	return MUID(id)
 }
 

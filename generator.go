@@ -30,13 +30,13 @@ func NewGenerator(sizeTS, sizeMID int, mid []byte) (*Generator, error) {
 
 // Generator generates MUIDs
 type Generator struct {
-	SizeTS    int
-	SizeMID   int
+	SizeTS    int // bytes of timestamp
+	SizeMID   int // bytes of machine id
 	MachineID []byte
 	LastTS    uint64 // unix nanoseconds
 }
 
-// Generate generates one MUID
+// Generate generates one MUID based on the current system time
 func (g *Generator) Generate() MUID {
 	time.Sleep(1 * time.Nanosecond) // avoid generating multiple ID's within nanosecond timestamp resolution
 	t := time.Now().UnixNano()
@@ -45,10 +45,11 @@ func (g *Generator) Generate() MUID {
 	return generate(g.SizeTS, g.SizeMID, ts, g.MachineID)
 }
 
-// Bulk generates many MUIDs
+// Bulk generates many MUIDs with sequential timestamps, i.e. if Bulk(3) is
+// called at timestamp 100, the ids will have timestamps 100, 101, 102
 func (g *Generator) Bulk(n int) []MUID {
 	if n < 1 {
-		panic("need >1 bulk generator count")
+		panic("need >0 bulk generator count")
 	}
 	results := make([]MUID, n)
 	t0 := uint64(time.Now().UnixNano())
@@ -57,17 +58,9 @@ func (g *Generator) Bulk(n int) []MUID {
 	}
 	g.LastTS = t0 + uint64(n)
 	for i := uint64(0); i < uint64(n); i++ {
-		// ts := make([]byte, 12)
-		// _ = binary.PutUvarint(ts, t0+i)
-		// bigenough := make([]byte, 8)
 		ts := make([]byte, 8)
 		binary.BigEndian.PutUint64(ts, uint64(t0+i)) // thx http://stackoverflow.com/a/11015354/1380669
 		results[i] = generate(g.SizeTS, g.SizeMID, padOrTrim(ts, g.SizeTS), g.MachineID)
-		// if l < g.SizeTS {
-		// 	continue
-		// }
-		// results[i] = generate(g.SizeTS, g.SizeMID, ts[l-g.SizeTS:], g.MachineID)
-
 	}
 	return results
 }
