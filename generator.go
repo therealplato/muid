@@ -33,6 +33,7 @@ type Generator struct {
 	SizeTS    int
 	SizeMID   int
 	MachineID []byte
+	LastTS    uint64 // unix nanoseconds
 }
 
 // Generate generates one MUID
@@ -45,6 +46,20 @@ func (g *Generator) Generate() MUID {
 }
 
 // Bulk generates many MUIDs
-func (g *Generator) Bulk(int) []MUID {
-	return nil
+func (g *Generator) Bulk(n int) []MUID {
+	if n < 1 {
+		panic("need >1 bulk generator count")
+	}
+	results := make([]MUID, n)
+	t0 := uint64(time.Now().UnixNano())
+	if t0 < g.LastTS {
+		panic("race condition, generated bulk ids too fast")
+	}
+	g.LastTS = t0 + uint64(n)
+	for i := uint64(0); i < uint64(n); i++ {
+		ts := make([]byte, g.SizeTS)
+		binary.BigEndian.PutUint64(ts, t0+i)
+		results[i] = generate(g.SizeTS, g.SizeMID, ts, g.MachineID)
+	}
+	return results
 }

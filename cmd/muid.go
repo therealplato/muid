@@ -21,7 +21,6 @@ func main() {
 	var bytesMID = flag.Int("sizeid", 8, "use this many bytes for machine ID")
 	var midhex = flag.String("machineid", "1234567890abcdef", "hexadecimal machine id")
 	flag.Parse()
-	out := make([]muid.MUID, *count)
 	machineID, err := hex.DecodeString(*midhex)
 	if err != nil {
 		panic("machineID is invalid bytes: " + err.Error())
@@ -33,13 +32,15 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	for i := 0; i < *count; i++ {
-		tmp := m.Generate()
-		out[i] = tmp
-		// if !*quiet {
-		// 	fmt.Printf("%x\n", tmp)
-		// }
-	}
+	// for i := 0; i < *count; i++ {
+	// 	tmp := m.Generate()
+	// 	out[i] = tmp
+	// 	// if !*quiet {
+	// 	// 	fmt.Printf("%x\n", tmp)
+	// 	// }
+	// }
+	out := m.Bulk(*count)
 	pprof.WriteHeapProfile(g)
 	g.Close()
+	_ = out
 }
