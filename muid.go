@@ -15,19 +15,15 @@ type MUID []byte
 // is returned. Otherwise, machineID is left zero padded to (sizeBytes-sizeLeft)
 // and then truncated to (sizeBytes-sizeLeft) bytes. A MUID is constructed by
 // concatenating the timestamp bytes and machineID bytes and returned.
-func Generate(sizeBytes, sizeLeft int, machineID []byte) (MUID, error) {
+func generate(sizeBytes, sizeLeft int, machineID []byte) MUID {
 	sizeRight := sizeBytes - sizeLeft // bytes for machine id
-	if len(machineID) == 0 {
-		return nil, fmt.Errorf("missing %d machineID bytes", sizeRight)
-	}
 	// TODO: Try starting with padOrTrim(machineID, sizeBytes)
 	id := make([]byte, sizeBytes)
 	machineID = padOrTrim(machineID, sizeRight)
 	copy(id[sizeLeft:], machineID)
 	t := time.Now().UnixNano()
 	binary.BigEndian.PutUint64(id[:sizeLeft], uint64(t)) // thx http://stackoverflow.com/a/11015354/1380669
-	time.Sleep(1 * time.Nanosecond)
-	return MUID(id), nil
+	return MUID(id)
 }
 
 // String returns a hex formatted id string

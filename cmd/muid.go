@@ -21,7 +21,6 @@ func main() {
 	var bytesMID = flag.Int("sizeid", 8, "use this many bytes for machine ID")
 	var midhex = flag.String("machineid", "1234567890abcdef", "hexadecimal machine id")
 	flag.Parse()
-	size := *bytesT + *bytesMID
 	out := make([]muid.MUID, *count)
 	machineID, err := hex.DecodeString(*midhex)
 	if err != nil {
@@ -30,11 +29,12 @@ func main() {
 	if len(machineID) != *bytesMID {
 		panic("machineID is wrong number of hex bytes")
 	}
+	m, err := muid.NewGenerator(*bytesT, *bytesMID, machineID)
+	if err != nil {
+		panic(err)
+	}
 	for i := 0; i < *count; i++ {
-		tmp, err := muid.Generate(size, *bytesT, machineID)
-		if err != nil {
-			panic(err)
-		}
+		tmp := m.Generate()
 		out[i] = tmp
 		// if !*quiet {
 		// 	fmt.Printf("%x\n", tmp)
