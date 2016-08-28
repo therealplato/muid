@@ -57,9 +57,17 @@ func (g *Generator) Bulk(n int) []MUID {
 	}
 	g.LastTS = t0 + uint64(n)
 	for i := uint64(0); i < uint64(n); i++ {
-		ts := make([]byte, g.SizeTS)
-		binary.BigEndian.PutUint64(ts, t0+i)
-		results[i] = generate(g.SizeTS, g.SizeMID, ts, g.MachineID)
+		// ts := make([]byte, 12)
+		// _ = binary.PutUvarint(ts, t0+i)
+		// bigenough := make([]byte, 8)
+		ts := make([]byte, 8)
+		binary.BigEndian.PutUint64(ts, uint64(t0+i)) // thx http://stackoverflow.com/a/11015354/1380669
+		results[i] = generate(g.SizeTS, g.SizeMID, padOrTrim(ts, g.SizeTS), g.MachineID)
+		// if l < g.SizeTS {
+		// 	continue
+		// }
+		// results[i] = generate(g.SizeTS, g.SizeMID, ts[l-g.SizeTS:], g.MachineID)
+
 	}
 	return results
 }
