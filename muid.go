@@ -6,18 +6,16 @@ import "fmt"
 // The MSB bits represent a timestamp, the LSB bits are a generator machineID
 type MUID []byte
 
-// Generate takes the total id length sizeBytes, the number of bytes in the
-// timestamp portion sizeLeft, and a machineID. If machineID is empty, an error
-// is returned. Otherwise, machineID is left zero padded to (sizeBytes-sizeLeft)
-// and then truncated to (sizeBytes-sizeLeft) bytes. A MUID is constructed by
-// concatenating the timestamp bytes and machineID bytes and returned.
-func generate(sizeTS, sizeMID int, ts, machineID []byte) MUID {
-	if len(ts) != sizeTS || len(machineID) != sizeMID {
-		panic("generate received bytes not matching given lengths")
+// generate takes the timestamp byte count sizeTS, machine id byte count
+// sizeMID, and the actual byte slices of each. mid is concatenated onto ts
+// and returned. The function panics if a wrong length is specified.
+func generate(sizeTS, sizeMID int, ts, mid []byte) MUID {
+	if len(ts) != sizeTS || len(mid) != sizeMID {
+		panic("muid: generate received bytes not matching given lengths")
 	}
 	size := sizeTS + sizeMID
-	// left pad machineID with zeroes up to total size:
-	id := padOrTrim(machineID, size)
+	// left pad mid with zeroes up to total size:
+	id := padOrTrim(mid, size)
 	copy(ts, id[:sizeTS])
 	return MUID(id)
 }
