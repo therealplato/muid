@@ -1,6 +1,7 @@
 package muid
 
 import (
+	"encoding/binary"
 	"errors"
 	"time"
 )
@@ -37,7 +38,10 @@ type Generator struct {
 // Generate generates one MUID
 func (g *Generator) Generate() MUID {
 	time.Sleep(1 * time.Nanosecond) // avoid generating multiple ID's within nanosecond timestamp resolution
-	return generate(g.SizeTS+g.SizeMID, g.SizeTS, g.MachineID)
+	t := time.Now().UnixNano()
+	ts := make([]byte, g.SizeTS)
+	binary.BigEndian.PutUint64(ts, uint64(t)) // thx http://stackoverflow.com/a/11015354/1380669
+	return generate(g.SizeTS, g.SizeMID, ts, g.MachineID)
 }
 
 // Bulk generates many MUIDs

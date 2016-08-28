@@ -1,10 +1,6 @@
 package muid
 
-import (
-	"encoding/binary"
-	"fmt"
-	"time"
-)
+import "fmt"
 
 // MUID is similar to a UUIDv1
 // The MSB bits represent a timestamp, the LSB bits are a generator machineID
@@ -15,14 +11,14 @@ type MUID []byte
 // is returned. Otherwise, machineID is left zero padded to (sizeBytes-sizeLeft)
 // and then truncated to (sizeBytes-sizeLeft) bytes. A MUID is constructed by
 // concatenating the timestamp bytes and machineID bytes and returned.
-func generate(sizeBytes, sizeLeft int, machineID []byte) MUID {
-	sizeRight := sizeBytes - sizeLeft // bytes for machine id
-	// TODO: Try starting with padOrTrim(machineID, sizeBytes)
-	id := make([]byte, sizeBytes)
-	machineID = padOrTrim(machineID, sizeRight)
-	copy(id[sizeLeft:], machineID)
-	t := time.Now().UnixNano()
-	binary.BigEndian.PutUint64(id[:sizeLeft], uint64(t)) // thx http://stackoverflow.com/a/11015354/1380669
+func generate(sizeTS, sizeMID int, ts, machineID []byte) MUID {
+	if len(ts) != sizeTS || len(machineID) != sizeMID {
+		panic("generate received bytes not matching given lengths")
+	}
+	size := sizeTS + sizeMID
+	// left pad machineID with zeroes up to total size:
+	id := padOrTrim(machineID, size)
+	copy(ts, id[:sizeTS])
 	return MUID(id)
 }
 
