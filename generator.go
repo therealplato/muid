@@ -40,9 +40,9 @@ type Generator struct {
 func (g *Generator) Generate() MUID {
 	time.Sleep(1 * time.Nanosecond) // avoid generating multiple ID's within nanosecond timestamp resolution
 	t := time.Now().UnixNano()
-	ts := make([]byte, g.SizeTS)
+	ts := make([]byte, 8)
 	binary.BigEndian.PutUint64(ts, uint64(t)) // thx http://stackoverflow.com/a/11015354/1380669
-	return generate(g.SizeTS, g.SizeMID, ts, g.MachineID)
+	return generate(g.SizeTS, g.SizeMID, padOrTrim(ts, g.SizeTS), g.MachineID)
 }
 
 // Bulk generates many MUIDs with sequential timestamps, i.e. if Bulk(3) is

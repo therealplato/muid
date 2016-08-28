@@ -13,19 +13,24 @@ func TestGenerator(t *testing.T) {
 	t.Run("constructing a Generator", func(t *testing.T) {
 		g, err = NewGenerator(3, 3, machineid)
 		assert.Nil(t, err)
+		assert.Equal(t, 3, g.SizeTS)
+		assert.Equal(t, 3, g.SizeMID)
+		assert.Equal(t, machineid, g.MachineID)
 		t.Run("when machineid is blank", func(t *testing.T) {
 			g, err = NewGenerator(3, 0, []byte{})
 			assert.NotNil(t, err)
 			assert.Nil(t, g)
 		})
 	})
-	// 	t.Run("successful id generation", func(t *testing.T) {
+	t.Run("successful id generation", func(t *testing.T) {
+		g, err = NewGenerator(3, 3, machineid)
+		id := g.Generate()
 
-	// 		t.Run("id is the correct length", func(t *testing.T) {
-	// 			id, err := generate(, 8, machineid)
-	// 			assert.Nil(t, err)
-	// 			assert.Equal(t, len(id), 16)
-	// 		})
+		t.Run("id is the correct length", func(t *testing.T) {
+			assert.Nil(t, err)
+			assert.Equal(t, len(id), 6)
+		})
+	})
 
 	// 		t.Run("timestamp portion of id is recent", func(t *testing.T) {
 	// 			id, err := generate(16, 8, machineid)
