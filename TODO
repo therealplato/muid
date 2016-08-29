@@ -4,6 +4,7 @@ Profit!
 
 
 But seriously, the next steps here are:
+- consume the IDs for something useful and see if there are any problems
 - write GRPC service wrapping generator.Generate() and generator.Bulk()
 - try running a Kubernetes deployment with many generators simultaneously
 - store machineids in etcd and look them up before using (to avoid collisions)

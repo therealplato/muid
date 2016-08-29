@@ -120,5 +120,4 @@ func TestBulk(t *testing.T) {
 // 		g.Bulk(1000)
 // 	}()
 // 	wg.Wait()
-
 // }
