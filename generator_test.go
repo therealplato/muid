@@ -98,4 +98,27 @@ func TestBulk(t *testing.T) {
 			assert.Equal(t, t1+1, t2)
 		})
 	})
+
+	// Haven't yet figured out how to catch this panic with assert and avoid killing the tests:
+	// t.Run("panics when simultaneous usage makes a collision", func(t *testing.T) {
+	// 	assert.Panics(t, collide)
+	// })
 }
+
+// func collide() {
+// 	machineid := []byte{0x66, 0x6f, 0x6f}
+// 	g, _ := NewGenerator(3, 3, machineid)
+// 	var wg sync.WaitGroup
+// 	wg.Add(1)
+// 	go func() {
+// 		defer wg.Done()
+// 		g.Bulk(1000)
+// 	}()
+// 	wg.Add(1)
+// 	go func() {
+// 		defer wg.Done()
+// 		g.Bulk(1000)
+// 	}()
+// 	wg.Wait()
+
+// }
