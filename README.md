@@ -1,6 +1,10 @@
 #My Unique ID
 
-This tool generates unique ids similar to uuidv1 (based on timestamp and generator machine id). Uniqueness depends on two factors: The system running `muid` must have a correct system clock; More than one muid binary may not be running simultaneously with the same machineid.
+This tool generates unique ids similar to uuidv1 (based on timestamp and generator machine id).
+
+Uniqueness depends on two factors:
+  - The muid binary may never see the same system clock time twice
+  - More than one muid binary may not be running simultaneously with the same machineid.
 
 Machine ID's may be randomly chosen when the muid generator container is created, or a MAC address may be used.
 
@@ -9,7 +13,7 @@ Put the code in your `$GOPATH`:
 
 ```
 go get github.com/therealplato/muid
- (or...)
+# (or...)
 cp -r . $GOPATH/src/github.com/therealplato/muid
 
 cd $GOPATH/src/github.com/therealplato/muid
@@ -22,8 +26,12 @@ go build cmd/muid.go
 ```
 
 Run the binary with default configuration:
-./muid
-(or, ./muix.exe on windows)
+
+```
+./muid    #./muid.exe on windows
+```
+
+Inspect memory usage: see [MEMORY](https://github.com/therealplato/muid/blob/master/MEMORY)
 
 ### Configuration
 The `muid` binary supports these flags:
